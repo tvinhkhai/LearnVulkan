@@ -1,7 +1,6 @@
 #LearnVulkan
 prj/vs2022/
 
-
 # Prerequisites
 *.d
 
@@ -433,3 +432,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#precompiled libs
+!libs/glfw/lib-vc2022/glfw3.lib
