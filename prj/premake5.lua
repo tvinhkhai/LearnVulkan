@@ -1,3 +1,10 @@
+function AddVulkanSDK()
+    VULKAN_SDK = os.getenv("VULKAN_SDK")
+    includedirs "%{VULKAN_SDK}/Include"
+    libdirs "%{VULKAN_SDK}/Lib"
+    links "vulkan-1"
+end
+
 workspace "LearnVulkan"
     location(_ACTION)
     configurations { "Debug", "Release"}
@@ -23,17 +30,45 @@ project "LearnVulkan"
     pchheader "stdafx.h"
     pchsource "../src/stdafx.cpp"
 
-    files { "../src/**.h", "../src/**.cpp" }
+    files 
+    {
+        "../src/**.h"
+        , "../src/**.cpp" 
+        , "../libs/glm/glm/**.hpp"
+        , "../libs/glm/glm/**.inl"
+    }
+
+    defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
+	}
 
     includedirs
     {
         "../src"
+        , "../libs/glfw/include"
+        , "../libs/glm"
+    }
+    
+    libdirs
+    {
+        "../libs/glfw/lib-vc2022"
+    }
+
+    links
+    {
+        "glfw3"
     }
 
     filter "configurations:Debug"
         defines { "DEBUG" }
         symbols "On"
+    filter{}
 
     filter "configurations:Release"
         defines { "NDEBUG" }
         optimize "On"
+    filter{}
+
+    AddVulkanSDK()
