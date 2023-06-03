@@ -1,0 +1,39 @@
+#include "stdafx.h"
+#include "Window.h"
+
+#define GLFW_INCLUDE_NONE
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+namespace
+{
+	constexpr uint32_t k_WIDTH = 800;
+	constexpr uint32_t k_HEIGHT = 600;
+}
+
+Window::Window()
+{
+	glfwInit();
+
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // to not create opengl context
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+	m_window = glfwCreateWindow(k_WIDTH, k_WIDTH, "Vulkan", nullptr, nullptr);
+}
+
+Window::~Window()
+{
+	glfwDestroyWindow(m_window);
+	
+	glfwTerminate();
+}
+
+bool Window::IsExiting()
+{
+	return glfwWindowShouldClose(m_window);
+}
+
+void Window::Update()
+{
+	glfwPollEvents();
+}

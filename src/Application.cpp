@@ -1,20 +1,39 @@
 #include "stdafx.h"
 #include "Application.h"
 
-void HelloTriangleApplication::run() {
+#include "Window.h"
+
+Application::Application()
+    :m_window(std::make_unique<Window>())
+{
+}
+
+Application::~Application()
+{
+    m_window.reset();
+}
+
+void Application::run()
+{
     initVulkan();
     mainLoop();
     cleanup();
 }
 
-void HelloTriangleApplication::initVulkan() {
+void Application::initVulkan()
+{
 
 }
 
-void HelloTriangleApplication::mainLoop() {
-
+void Application::mainLoop()
+{
+    while (!m_window->IsExiting())
+    {
+        m_window->Update();
+    }
 }
 
-void HelloTriangleApplication::cleanup() {
+void Application::cleanup()
+{
 
 }
