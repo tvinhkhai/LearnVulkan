@@ -2,15 +2,16 @@
 #include "Application.h"
 
 #include "Window.h"
+#include "VulkanAPI.h"
 
 Application::Application()
     :m_window(std::make_unique<Window>())
+    , m_vulkanAPI(std::make_unique<VulkanAPI>())
 {
 }
 
 Application::~Application()
 {
-    m_window.reset();
 }
 
 void Application::run()
@@ -22,7 +23,7 @@ void Application::run()
 
 void Application::initVulkan()
 {
-
+    m_vulkanAPI->CreateInstance(m_window);
 }
 
 void Application::mainLoop()

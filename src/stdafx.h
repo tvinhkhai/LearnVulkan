@@ -2,3 +2,6 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
+#include <cstdlib>
+#include <vector>
