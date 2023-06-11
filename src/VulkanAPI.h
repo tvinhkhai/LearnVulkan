@@ -10,11 +10,14 @@ class VulkanAPI {
 public:
     VulkanAPI();
     ~VulkanAPI();
-    void CreateInstance(std::unique_ptr<Window>& i_window);
+    void CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers);
 
 #if defined(DEBUG)
     void PrintAvailableExtensions();
 #endif
+
+private:
+    bool CheckValidationLayerSupport();
 
 private:
     VkInstance m_instance;

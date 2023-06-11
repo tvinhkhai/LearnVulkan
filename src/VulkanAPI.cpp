@@ -4,6 +4,11 @@
 #include "Window.h"
 
 #include <vulkan/vulkan.h>
+#include <cstring>
+
+const std::vector<const char*> k_validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
 
 VulkanAPI::VulkanAPI()
 {
@@ -15,8 +20,13 @@ VulkanAPI::~VulkanAPI()
     vkDestroyInstance(m_instance, nullptr);
 }
 
-void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window)
+void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers)
 {
+    if (i_enableValidationLayers && !CheckValidationLayerSupport())
+    {
+        throw std::runtime_error("validation layers requested, but not available!");
+    }
+
     ///
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -34,9 +44,19 @@ void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window)
     createInfo.pApplicationInfo = &appInfo;
     createInfo.enabledExtensionCount = extInfo.Count;
     createInfo.ppEnabledExtensionNames = extInfo.Extensions;
-    createInfo.enabledLayerCount = 0;
+    
+    if (i_enableValidationLayers)
+    {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(k_validationLayers.size());
+        createInfo.ppEnabledLayerNames = k_validationLayers.data();
+    }
+    else
+    {
+        createInfo.enabledLayerCount = 0;
+    }
 
-    if (vkCreateInstance(&createInfo, nullptr, &m_instance))
+    VkResult createResult = vkCreateInstance(&createInfo, nullptr, &m_instance);
+    if (createResult != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create instance!");
     }
@@ -59,3 +79,33 @@ void VulkanAPI::PrintAvailableExtensions()
     }
 }
 #endif
+
+bool VulkanAPI::CheckValidationLayerSupport()
+{
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char* layerName : k_validationLayers)
+    {
+        bool layerFound = false;
+
+        for (const VkLayerProperties& layerProperties : availableLayers)
+        {
+            if (strcmp(layerName, layerProperties.layerName) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
