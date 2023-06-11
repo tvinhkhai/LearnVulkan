@@ -24,6 +24,7 @@ const std::vector<const char*> k_validationLayers = {
 VulkanAPI::VulkanAPI():
     m_instance(nullptr)
     , m_enableValidationLayers(false)
+    , m_debugMessenger(nullptr)
 {
 
 }
