@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "VulkanAPI.h"
 
+#include "QueueFamilyIndices.h"
 #include "Window.h"
 
 #include <vulkan/vulkan.h>
@@ -25,6 +26,7 @@ VulkanAPI::VulkanAPI():
     m_instance(nullptr)
     , m_enableValidationLayers(false)
     , m_debugMessenger(nullptr)
+    , m_physicalDevice(VK_NULL_HANDLE)
 {
 
 }
@@ -105,6 +107,38 @@ void VulkanAPI::SetupDebugMessenger()
     if (result != VK_SUCCESS)
     {
         throw std::runtime_error("failed to set up debug messenger!");
+    }
+}
+
+void VulkanAPI::PickPhysicalDevice()
+{
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+        throw std::runtime_error("failed to find GPUs with Vulkan support!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+    // Use an ordered map to automatically sort candidates by increasing score
+    std::multimap<int, VkPhysicalDevice> candidates;
+
+    for (const VkPhysicalDevice& device : devices)
+    {
+        int score = RateDeviceSuitability(device);
+        candidates.insert(std::make_pair(score, device));
+    }
+
+    if (candidates.rbegin()->first > 0)
+    {
+        m_physicalDevice = candidates.rbegin()->second;
+    }
+    else
+    {
+        throw std::runtime_error("failed to find a suitable GPU!");
     }
 }
 
@@ -199,4 +233,70 @@ void VulkanAPI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
         | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     o_createInfo.pfnUserCallback = DebugCb;
     o_createInfo.pUserData = nullptr; //optional
+}
+
+int VulkanAPI::RateDeviceSuitability(VkPhysicalDevice device)
+{
+    if (!IsDeviceSuitable(device))
+    {
+        return 0;
+    }
+
+    VkPhysicalDeviceProperties properties;
+    VkPhysicalDeviceFeatures features;
+    int score = 0;
+
+    vkGetPhysicalDeviceProperties(device, &properties);
+    vkGetPhysicalDeviceFeatures(device, &features);
+
+    // Discrete GPUs have a significant performance advantage
+    if (properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+    {
+        score += 1000;
+    }
+
+    // Maximum possible size of textures affects graphics quality
+    score += properties.limits.maxImageDimension2D;
+
+    // Application can't function without geometry shaders
+    if (!features.geometryShader) {
+        return 0;
+    }
+
+    return score;
+}
+
+bool VulkanAPI::IsDeviceSuitable(VkPhysicalDevice device)
+{
+    QueueFamilyIndices indices = FindQueueFamily(device);
+
+    return indices.IsComplete();
+}
+
+QueueFamilyIndices VulkanAPI::FindQueueFamily(VkPhysicalDevice device)
+{
+    QueueFamilyIndices indices;
+    uint32_t count = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, nullptr);
+
+    std::vector<VkQueueFamilyProperties> families(count);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &count, families.data());
+
+    int i = 0;
+    for (const VkQueueFamilyProperties& family : families)
+    {
+        if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+            indices.optGraphicsFamily = i;
+        }
+
+        if (indices.IsComplete())
+        {
+            break;
+        }
+
+        i++;
+    }
+
+    return indices;
 }

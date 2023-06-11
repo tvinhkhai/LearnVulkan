@@ -1,10 +1,13 @@
 #pragma once
 
 //forward declare vulkan instance, is this the proper way?
-struct VkInstance_T;
-typedef struct VkInstance_T* VkInstance;
-struct VkDebugUtilsMessengerEXT_T;
-typedef struct VkDebugUtilsMessengerEXT_T* VkDebugUtilsMessengerEXT;
+#define VK_FW_DECLARATION(object) \
+struct object##_T;\
+typedef struct object##_T* object;
+
+VK_FW_DECLARATION(VkInstance);
+VK_FW_DECLARATION(VkDebugUtilsMessengerEXT);
+VK_FW_DECLARATION(VkPhysicalDevice);
 struct VkDebugUtilsMessengerCreateInfoEXT;
 struct VkAllocationCallbacks;
 enum VkResult;
