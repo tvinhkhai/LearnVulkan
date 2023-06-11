@@ -5,7 +5,7 @@ int main() {
     Application app;
 
     try {
-        app.run();
+        app.Run();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

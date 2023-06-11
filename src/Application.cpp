@@ -14,19 +14,19 @@ Application::~Application()
 {
 }
 
-void Application::run()
+void Application::Run()
 {
-    initVulkan();
-    mainLoop();
-    cleanup();
+    InitVulkan();
+    MainLoop();
+    Cleanup();
 }
 
-void Application::initVulkan()
+void Application::InitVulkan()
 {
     m_vulkanAPI->CreateInstance(m_window);
 }
 
-void Application::mainLoop()
+void Application::MainLoop()
 {
     while (!m_window->IsExiting())
     {
@@ -34,7 +34,7 @@ void Application::mainLoop()
     }
 }
 
-void Application::cleanup()
+void Application::Cleanup()
 {
 
 }

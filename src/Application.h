@@ -7,12 +7,12 @@ class Application {
 public:
     Application();
     ~Application();
-    void run();
+    void Run();
 
 private:
-    void initVulkan();
-    void mainLoop();
-    void cleanup();
+    void InitVulkan();
+    void MainLoop();
+    void Cleanup();
 
 private:
     std::unique_ptr<Window> m_window;
