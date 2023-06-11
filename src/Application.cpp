@@ -31,6 +31,7 @@ void Application::Run()
 void Application::InitVulkan()
 {
     m_vulkanAPI->CreateInstance(m_window, k_wantsValidationLayers);
+    m_vulkanAPI->SetupDebugMessenger();
 }
 
 void Application::MainLoop()

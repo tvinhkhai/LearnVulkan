@@ -34,6 +34,7 @@ project "LearnVulkan"
     {
         "../src/**.h"
         , "../src/**.cpp" 
+        , "../src/**.inl" 
         , "../libs/glm/glm/**.hpp"
         , "../libs/glm/glm/**.inl"
     }
