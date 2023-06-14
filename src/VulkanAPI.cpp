@@ -27,12 +27,15 @@ VulkanAPI::VulkanAPI():
     , m_enableValidationLayers(false)
     , m_debugMessenger(nullptr)
     , m_physicalDevice(VK_NULL_HANDLE)
+    , m_logicalDevice(nullptr)
+    , m_graphicsQueue(nullptr)
 {
 
 }
 
 VulkanAPI::~VulkanAPI()
 {
+    vkDestroyDevice(m_logicalDevice, nullptr);
     if (m_enableValidationLayers)
     {
         DestroyDebugUtilsMessengerEXT(nullptr);
@@ -140,6 +143,50 @@ void VulkanAPI::PickPhysicalDevice()
     {
         throw std::runtime_error("failed to find a suitable GPU!");
     }
+}
+
+void VulkanAPI::CreateLogicalDevice()
+{
+    assert(m_physicalDevice != VK_NULL_HANDLE);
+
+    QueueFamilyIndices indices = FindQueueFamily(m_physicalDevice);
+    assert(indices.optGraphicsFamily.has_value());
+
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = indices.optGraphicsFamily.value();
+    queueCreateInfo.queueCount = 1;
+
+    float queuePriority = 1.0f;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+
+    VkPhysicalDeviceFeatures deviceFeatures{};
+
+    VkDeviceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    createInfo.pQueueCreateInfos = &queueCreateInfo;
+    createInfo.queueCreateInfoCount = 1;
+
+    createInfo.pEnabledFeatures = &deviceFeatures;
+
+    createInfo.enabledExtensionCount = 0;
+
+    if (m_enableValidationLayers)
+    {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(k_validationLayers.size());
+        createInfo.ppEnabledLayerNames = k_validationLayers.data();
+    }
+    else
+    {
+        createInfo.enabledLayerCount = 0;
+    }
+
+    VkResult result = vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_logicalDevice);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("failed to create logical device!");
+    }
+
+    vkGetDeviceQueue(m_logicalDevice, indices.optGraphicsFamily.value(), 0, &m_graphicsQueue);
 }
 
 #if defined(DEBUG)

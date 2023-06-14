@@ -33,6 +33,7 @@ void Application::InitVulkan()
     m_vulkanAPI->CreateInstance(m_window, k_wantsValidationLayers);
     m_vulkanAPI->SetupDebugMessenger();
     m_vulkanAPI->PickPhysicalDevice();
+    m_vulkanAPI->CreateLogicalDevice();
 }
 
 void Application::MainLoop()

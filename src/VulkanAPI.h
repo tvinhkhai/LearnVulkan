@@ -12,6 +12,7 @@ public:
     void CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers);
     void SetupDebugMessenger();
     void PickPhysicalDevice();
+    void CreateLogicalDevice();
 
 #if defined(DEBUG)
     void PrintAvailableExtensions();
@@ -35,4 +36,6 @@ private:
     bool m_enableValidationLayers;
     VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
+    VkDevice m_logicalDevice;
+    VkQueue m_graphicsQueue;
 };
