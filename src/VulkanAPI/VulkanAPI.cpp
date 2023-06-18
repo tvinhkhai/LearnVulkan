@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "VulkanAPI.h"
 
+#include "VulkanAPI/Instance.h"
 #include "VulkanAPI/QueueFamilyIndices.h"
 #include "Window.h"
 
@@ -8,18 +9,19 @@
 #include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCb(
-    VkDebugUtilsMessageSeverityFlagBitsEXT i_severity,
-    VkDebugUtilsMessageTypeFlagsEXT i_type,
-    const VkDebugUtilsMessengerCallbackDataEXT* i_cbData,
-    void* i_userData)
+namespace
 {
-    std::cerr << "validation layer: " << i_cbData->pMessage << std::endl;
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCb(
+        VkDebugUtilsMessageSeverityFlagBitsEXT i_severity,
+        VkDebugUtilsMessageTypeFlagsEXT i_type,
+        const VkDebugUtilsMessengerCallbackDataEXT* i_cbData,
+        void* i_userData)
+    {
+        std::cerr << "validation layer: " << i_cbData->pMessage << std::endl;
 
-    return VK_FALSE;
+        return VK_FALSE;
+    }
 }
-
 ///////////////////////////////////////////////////////////////////////////////
 
 namespace VulkanAPI
@@ -50,7 +52,7 @@ VulkanAPI::~VulkanAPI()
     {
         DestroyDebugUtilsMessengerEXT(nullptr);
     }
-    vkDestroyInstance(m_instance, nullptr);
+    m_instance.reset();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,47 +64,7 @@ void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableV
         throw std::runtime_error("validation layers requested, but not available!");
     }
 
-    m_enableValidationLayers = i_enableValidationLayers;
-
-    ///
-    VkApplicationInfo appInfo{};
-    appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "LearnVulkan";
-    appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "No Engine";
-    appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
-
-    ///
-    VkInstanceCreateInfo createInfo{};
-    std::vector<const char*> requiredExtension = GetRequiredExtensions(i_window);
-    
-    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pApplicationInfo = &appInfo;
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtension.size());
-    createInfo.ppEnabledExtensionNames = requiredExtension.data();
-    
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (i_enableValidationLayers)
-    {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(k_validationLayers.size());
-        createInfo.ppEnabledLayerNames = k_validationLayers.data();
-
-        PopulateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
-    }
-    else
-    {
-        createInfo.enabledLayerCount = 0;
-
-        createInfo.pNext = nullptr;
-    }
-
-    VkResult createResult = vkCreateInstance(&createInfo, nullptr, &m_instance);
-    if (createResult != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create instance!");
-    }
+    m_instance = std::make_unique<Instance>(i_window, i_enableValidationLayers);
 #if defined(DEBUG)
     PrintAvailableExtensions();
 #endif
@@ -132,7 +94,7 @@ void VulkanAPI::SetupDebugMessenger()
 void VulkanAPI::PickPhysicalDevice()
 {
     uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+    vkEnumeratePhysicalDevices(m_instance->m_instance, &deviceCount, nullptr);
 
     if (deviceCount == 0)
     {
@@ -140,7 +102,7 @@ void VulkanAPI::PickPhysicalDevice()
     }
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+    vkEnumeratePhysicalDevices(m_instance->m_instance, &deviceCount, devices.data());
 
     // Use an ordered map to automatically sort candidates by increasing score
     std::multimap<int, VkPhysicalDevice> candidates;
@@ -276,10 +238,10 @@ std::vector<const char*> VulkanAPI::GetRequiredExtensions(std::unique_ptr<Window
 
 VkResult VulkanAPI::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* i_createInfo, const VkAllocationCallbacks* i_allocator)
 {
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance->m_instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
-        return func(m_instance, i_createInfo, nullptr, &m_debugMessenger);
+        return func(m_instance->m_instance, i_createInfo, nullptr, &m_debugMessenger);
     }
     else
     {
@@ -291,9 +253,9 @@ VkResult VulkanAPI::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCrea
 
 void VulkanAPI::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* i_allocator)
 {
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance->m_instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) {
-        func(m_instance, m_debugMessenger, i_allocator);
+        func(m_instance->m_instance, m_debugMessenger, i_allocator);
     }
 }
 

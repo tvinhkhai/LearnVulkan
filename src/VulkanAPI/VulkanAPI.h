@@ -6,6 +6,7 @@ class Window;
 
 namespace VulkanAPI
 {
+class Instance;
 struct QueueFamilyIndices;
 }
 
@@ -40,7 +41,7 @@ private:
     QueueFamilyIndices FindQueueFamily(VkPhysicalDevice device);
 
 private:
-    VkInstance m_instance;
+    std::unique_ptr<Instance> m_instance;
     bool m_enableValidationLayers;
     VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
