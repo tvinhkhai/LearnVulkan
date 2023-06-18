@@ -1,5 +1,8 @@
 #pragma once
 
+namespace VulkanAPI
+{
+///////////////////////////////////////////////////////////////////////////////
 struct QueueFamilyIndices 
 {
 	std::optional<uint32_t> optGraphicsFamily;
@@ -9,3 +12,5 @@ struct QueueFamilyIndices
 		return optGraphicsFamily.has_value();
 	}
 };
+///////////////////////////////////////////////////////////////////////////////
+} //namespace VulkanAPI

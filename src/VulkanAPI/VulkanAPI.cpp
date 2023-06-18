@@ -7,6 +7,8 @@
 #include <vulkan/vulkan.h>
 #include <cstring>
 
+///////////////////////////////////////////////////////////////////////////////
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCb(
     VkDebugUtilsMessageSeverityFlagBitsEXT i_severity,
     VkDebugUtilsMessageTypeFlagsEXT i_type,
@@ -18,9 +20,15 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCb(
     return VK_FALSE;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+namespace VulkanAPI
+{
+///////////////////////////////////////////////////////////////////////////////
 const std::vector<const char*> k_validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
+///////////////////////////////////////////////////////////////////////////////
 
 VulkanAPI::VulkanAPI():
     m_instance(nullptr)
@@ -33,6 +41,8 @@ VulkanAPI::VulkanAPI():
 
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 VulkanAPI::~VulkanAPI()
 {
     vkDestroyDevice(m_logicalDevice, nullptr);
@@ -42,6 +52,8 @@ VulkanAPI::~VulkanAPI()
     }
     vkDestroyInstance(m_instance, nullptr);
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers)
 {
@@ -96,6 +108,8 @@ void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableV
 #endif
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 void VulkanAPI::SetupDebugMessenger()
 {
     if (!m_enableValidationLayers)
@@ -112,6 +126,8 @@ void VulkanAPI::SetupDebugMessenger()
         throw std::runtime_error("failed to set up debug messenger!");
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 void VulkanAPI::PickPhysicalDevice()
 {
@@ -144,6 +160,8 @@ void VulkanAPI::PickPhysicalDevice()
         throw std::runtime_error("failed to find a suitable GPU!");
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 void VulkanAPI::CreateLogicalDevice()
 {
@@ -189,6 +207,8 @@ void VulkanAPI::CreateLogicalDevice()
     vkGetDeviceQueue(m_logicalDevice, indices.optGraphicsFamily.value(), 0, &m_graphicsQueue);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 #if defined(DEBUG)
 void VulkanAPI::PrintAvailableExtensions()
 {
@@ -203,6 +223,8 @@ void VulkanAPI::PrintAvailableExtensions()
     }
 }
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
 
 bool VulkanAPI::CheckValidationLayerSupport()
 {
@@ -234,6 +256,8 @@ bool VulkanAPI::CheckValidationLayerSupport()
     return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 std::vector<const char*> VulkanAPI::GetRequiredExtensions(std::unique_ptr<Window>& i_window)
 {
     RequiredInstanceExtensionsInfo extInfo = i_window->GetRequiredInstanceExtensionsInfo();
@@ -248,6 +272,8 @@ std::vector<const char*> VulkanAPI::GetRequiredExtensions(std::unique_ptr<Window
     return extensions;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 VkResult VulkanAPI::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* i_createInfo, const VkAllocationCallbacks* i_allocator)
 {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
@@ -261,6 +287,8 @@ VkResult VulkanAPI::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCrea
     }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 void VulkanAPI::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* i_allocator)
 {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -268,6 +296,8 @@ void VulkanAPI::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* i_all
         func(m_instance, m_debugMessenger, i_allocator);
     }
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 void VulkanAPI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& o_createInfo)
 {
@@ -281,6 +311,8 @@ void VulkanAPI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
     o_createInfo.pfnUserCallback = DebugCb;
     o_createInfo.pUserData = nullptr; //optional
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 int VulkanAPI::RateDeviceSuitability(VkPhysicalDevice device)
 {
@@ -313,12 +345,16 @@ int VulkanAPI::RateDeviceSuitability(VkPhysicalDevice device)
     return score;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
 bool VulkanAPI::IsDeviceSuitable(VkPhysicalDevice device)
 {
     QueueFamilyIndices indices = FindQueueFamily(device);
 
     return indices.IsComplete();
 }
+
+///////////////////////////////////////////////////////////////////////////////
 
 QueueFamilyIndices VulkanAPI::FindQueueFamily(VkPhysicalDevice device)
 {
@@ -347,3 +383,6 @@ QueueFamilyIndices VulkanAPI::FindQueueFamily(VkPhysicalDevice device)
 
     return indices;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+} //namespace VulkanAPI

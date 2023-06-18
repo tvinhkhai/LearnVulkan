@@ -1,9 +1,13 @@
 #pragma once
 
 class Window;
+namespace VulkanAPI
+{
 class VulkanAPI;
+}
 
 class Application {
+///////////////////////////////////////////////////////////////////////////////
 public:
     Application();
     ~Application();
@@ -16,5 +20,7 @@ private:
 
 private:
     std::unique_ptr<Window> m_window;
-    std::unique_ptr<VulkanAPI> m_vulkanAPI;
+    std::unique_ptr<VulkanAPI::VulkanAPI> m_vulkanAPI;
+
+///////////////////////////////////////////////////////////////////////////////
 };

@@ -3,9 +3,17 @@
 #include "VulkanAPI/VulkanAPI_fwd.inl"
 
 class Window;
-struct QueueFamilyIndices;
 
+namespace VulkanAPI
+{
+struct QueueFamilyIndices;
+}
+
+namespace VulkanAPI
+{
+///////////////////////////////////////////////////////////////////////////////
 class VulkanAPI {
+///////////////////////////////////////////////////////////////////////////////
 public:
     VulkanAPI();
     ~VulkanAPI();
@@ -39,3 +47,5 @@ private:
     VkDevice m_logicalDevice;
     VkQueue m_graphicsQueue;
 };
+///////////////////////////////////////////////////////////////////////////////
+} //namespace VulkanAPI
