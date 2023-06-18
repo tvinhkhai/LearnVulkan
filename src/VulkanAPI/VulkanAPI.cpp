@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "VulkanAPI.h"
 
-#include "QueueFamilyIndices.h"
+#include "VulkanAPI/QueueFamilyIndices.h"
 #include "Window.h"
 
 #include <vulkan/vulkan.h>
