@@ -33,6 +33,7 @@ const std::vector<const char*> k_validationLayers = {
 Instance::Instance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers)
     : m_instance(nullptr)
     , m_enableValidationLayers(false)
+    , m_debugMessenger(nullptr)
 {
     m_enableValidationLayers = i_enableValidationLayers;
 
@@ -81,6 +82,10 @@ Instance::Instance(std::unique_ptr<Window>& i_window, bool i_enableValidationLay
 
 Instance::~Instance()
 {
+    if (m_enableValidationLayers)
+    {
+        DestroyDebugUtilsMessenger();
+    }
     vkDestroyInstance(m_instance, nullptr);
 }
 
@@ -116,4 +121,32 @@ std::vector<const char*> Instance::GetRequiredExtensions(std::unique_ptr<Window>
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-} //namespace VulkanAPI
+
+VkResult Instance::CreateDebugUtilsMessenger()
+{
+    VkDebugUtilsMessengerCreateInfoEXT createInfo{};
+    PopulateDebugMessengerCreateInfo(createInfo);
+
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkCreateDebugUtilsMessengerEXT");
+    if (func != nullptr)
+    {
+        return func(m_instance, &createInfo, nullptr, &m_debugMessenger);
+    }
+    else
+    {
+        return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::DestroyDebugUtilsMessenger()
+{
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        func(m_instance, m_debugMessenger, nullptr);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+} //namespace Instance

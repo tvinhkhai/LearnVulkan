@@ -31,10 +31,6 @@ private:
     bool CheckValidationLayerSupport();
     std::vector<const char*> GetRequiredExtensions(std::unique_ptr<Window>& i_window);
 
-    VkResult CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* i_createInfo, const VkAllocationCallbacks* i_allocator);
-    void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* i_allocator);
-    void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& o_createInfo);
-
     int RateDeviceSuitability(VkPhysicalDevice device);
     bool IsDeviceSuitable(VkPhysicalDevice device);
 

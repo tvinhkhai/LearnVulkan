@@ -16,9 +16,15 @@ public:
     void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& o_createInfo);
     std::vector<const char*> GetRequiredExtensions(std::unique_ptr<Window>& i_window);
 
-    VkInstance m_instance; //todo make this private after done refactor
+    VkResult CreateDebugUtilsMessenger();
+
+    VkInstance m_instance; //todo: move to private
+private:
+    void DestroyDebugUtilsMessenger();
+
 private:
     bool m_enableValidationLayers;
+    VkDebugUtilsMessengerEXT m_debugMessenger;
 };
 ///////////////////////////////////////////////////////////////////////////////
 } //namespace Instance

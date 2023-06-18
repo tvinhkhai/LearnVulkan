@@ -48,10 +48,6 @@ VulkanAPI::VulkanAPI():
 VulkanAPI::~VulkanAPI()
 {
     vkDestroyDevice(m_logicalDevice, nullptr);
-    if (m_enableValidationLayers)
-    {
-        DestroyDebugUtilsMessengerEXT(nullptr);
-    }
     m_instance.reset();
 }
 
@@ -79,10 +75,7 @@ void VulkanAPI::SetupDebugMessenger()
         return;
     }
 
-    VkDebugUtilsMessengerCreateInfoEXT createInfo{};
-    PopulateDebugMessengerCreateInfo(createInfo);
-
-    VkResult result = CreateDebugUtilsMessengerEXT(&createInfo, nullptr);
+    VkResult result = m_instance->CreateDebugUtilsMessenger();
     if (result != VK_SUCCESS)
     {
         throw std::runtime_error("failed to set up debug messenger!");
@@ -232,46 +225,6 @@ std::vector<const char*> VulkanAPI::GetRequiredExtensions(std::unique_ptr<Window
     }
 
     return extensions;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-VkResult VulkanAPI::CreateDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT* i_createInfo, const VkAllocationCallbacks* i_allocator)
-{
-    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance->m_instance, "vkCreateDebugUtilsMessengerEXT");
-    if (func != nullptr)
-    {
-        return func(m_instance->m_instance, i_createInfo, nullptr, &m_debugMessenger);
-    }
-    else
-    {
-        return VK_ERROR_EXTENSION_NOT_PRESENT;
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void VulkanAPI::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* i_allocator)
-{
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(m_instance->m_instance, "vkDestroyDebugUtilsMessengerEXT");
-    if (func != nullptr) {
-        func(m_instance->m_instance, m_debugMessenger, i_allocator);
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-
-void VulkanAPI::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& o_createInfo)
-{
-    o_createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    o_createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    o_createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
-        | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    o_createInfo.pfnUserCallback = DebugCb;
-    o_createInfo.pUserData = nullptr; //optional
 }
 
 ///////////////////////////////////////////////////////////////////////////////
