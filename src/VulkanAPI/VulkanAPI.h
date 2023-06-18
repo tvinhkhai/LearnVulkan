@@ -39,10 +39,11 @@ private:
 private:
     std::unique_ptr<Instance> m_instance;
     bool m_enableValidationLayers;
-    VkDebugUtilsMessengerEXT m_debugMessenger;
     VkPhysicalDevice m_physicalDevice;
     VkDevice m_logicalDevice;
     VkQueue m_graphicsQueue;
+
+    const std::vector<const char*> k_validationLayers;
 };
 ///////////////////////////////////////////////////////////////////////////////
 } //namespace VulkanAPI

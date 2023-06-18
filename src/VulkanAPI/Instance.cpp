@@ -25,15 +25,12 @@ namespace
 namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
-const std::vector<const char*> k_validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
-///////////////////////////////////////////////////////////////////////////////
 
-Instance::Instance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers)
+Instance::Instance(std::unique_ptr<Window>& i_window, bool i_enableValidationLayers, const std::vector<const char*>& i_validationLayers)
     : m_instance(nullptr)
     , m_enableValidationLayers(false)
     , m_debugMessenger(nullptr)
+    , k_validationLayers(i_validationLayers)
 {
     m_enableValidationLayers = i_enableValidationLayers;
 

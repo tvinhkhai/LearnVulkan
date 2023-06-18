@@ -13,18 +13,14 @@
 namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
-const std::vector<const char*> k_validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
-///////////////////////////////////////////////////////////////////////////////
 
 VulkanAPI::VulkanAPI():
     m_instance(nullptr)
     , m_enableValidationLayers(false)
-    , m_debugMessenger(nullptr)
     , m_physicalDevice(VK_NULL_HANDLE)
     , m_logicalDevice(nullptr)
     , m_graphicsQueue(nullptr)
+    , k_validationLayers{"VK_LAYER_KHRONOS_validation"}
 {
 
 }
@@ -46,7 +42,7 @@ void VulkanAPI::CreateInstance(std::unique_ptr<Window>& i_window, bool i_enableV
         throw std::runtime_error("validation layers requested, but not available!");
     }
 
-    m_instance = std::make_unique<Instance>(i_window, i_enableValidationLayers);
+    m_instance = std::make_unique<Instance>(i_window, i_enableValidationLayers, k_validationLayers);
 #if defined(DEBUG)
     PrintAvailableExtensions();
 #endif
