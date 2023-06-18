@@ -2,11 +2,10 @@
 
 struct GLFWwindow;
 
-struct RequiredInstanceExtensionsInfo
+namespace VulkanAPI
 {
-    uint32_t Count = 0;
-    const char** Extensions;
-};
+struct RequiredInstanceExtensionsInfo;
+}
 
 class Window {
 ///////////////////////////////////////////////////////////////////////////////
@@ -17,7 +16,7 @@ public:
     bool IsExiting();
     void Update();
 
-    RequiredInstanceExtensionsInfo GetRequiredInstanceExtensionsInfo();
+    VulkanAPI::RequiredInstanceExtensionsInfo GetRequiredInstanceExtensionsInfo();
 
 private:
     GLFWwindow* m_window;

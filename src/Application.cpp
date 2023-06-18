@@ -3,18 +3,11 @@
 
 #include "Window.h"
 #include "VulkanAPI/VulkanAPI.h"
-
-///////////////////////////////////////////////////////////////////////////////
-#if defined(NDEBUG)
-constexpr bool k_wantsValidationLayers = false;
-#else
-constexpr bool k_wantsValidationLayers = true;
-#endif //NDEBUG
-///////////////////////////////////////////////////////////////////////////////
+#include "VulkanAPI/RequiredInstanceExtensionsInfo.h"
 
 Application::Application()
     :m_window(std::make_unique<Window>())
-    , m_vulkanAPI(std::make_unique<VulkanAPI::VulkanAPI>())
+    , m_vulkanAPI(nullptr)
 {
 }
 
@@ -37,10 +30,13 @@ void Application::Run()
 
 void Application::InitVulkan()
 {
-    m_vulkanAPI->CreateInstance(m_window, k_wantsValidationLayers);
-    m_vulkanAPI->SetupDebugMessenger();
-    m_vulkanAPI->PickPhysicalDevice();
-    m_vulkanAPI->CreateLogicalDevice();
+#if defined(NDEBUG)
+    const std::vector<const char*> k_validationLayers;
+#else
+    const std::vector<const char*> k_validationLayers {"VK_LAYER_KHRONOS_validation"};
+#endif
+    VulkanAPI::RequiredInstanceExtensionsInfo info = m_window->GetRequiredInstanceExtensionsInfo();
+    m_vulkanAPI = std::make_unique<VulkanAPI::VulkanAPI>(k_validationLayers, info);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -4,23 +4,21 @@
 
 namespace VulkanAPI
 {
-class Instance;
-class RequiredInstanceExtensionsInfo;
+    struct QueueFamilyIndices;
 }
 
 namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
-class VulkanAPI {
+class LogicalDevice {
 ///////////////////////////////////////////////////////////////////////////////
 public:
-    VulkanAPI(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
-    ~VulkanAPI();
-
-    void PrintAvailableExtensions();
+    LogicalDevice(VkDevice i_device, QueueFamilyIndices i_queueFamilyIndices);
+    ~LogicalDevice();
 
 private:
-    std::unique_ptr<Instance> m_instance;
+    VkDevice m_device;
+    VkQueue m_graphicsQueue;
 };
 ///////////////////////////////////////////////////////////////////////////////
-} //namespace VulkanAPI
+} //namespace Instance

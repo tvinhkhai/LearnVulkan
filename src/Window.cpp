@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "Window.h"
 
+#include "VulkanAPI/RequiredInstanceExtensionsInfo.h"
+
 #define GLFW_INCLUDE_NONE
 #include <vulkan/vulkan.h>
 #include <GLFW/glfw3.h>
@@ -48,9 +50,9 @@ void Window::Update()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-RequiredInstanceExtensionsInfo Window::GetRequiredInstanceExtensionsInfo()
+VulkanAPI::RequiredInstanceExtensionsInfo Window::GetRequiredInstanceExtensionsInfo()
 {
-	RequiredInstanceExtensionsInfo info;
+	VulkanAPI::RequiredInstanceExtensionsInfo info;
 	info.Extensions = glfwGetRequiredInstanceExtensions(&info.Count);
 
 	return info;
