@@ -9,20 +9,6 @@
 #include <cstring>
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace
-{
-    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCb(
-        VkDebugUtilsMessageSeverityFlagBitsEXT i_severity,
-        VkDebugUtilsMessageTypeFlagsEXT i_type,
-        const VkDebugUtilsMessengerCallbackDataEXT* i_cbData,
-        void* i_userData)
-    {
-        std::cerr << "validation layer: " << i_cbData->pMessage << std::endl;
-
-        return VK_FALSE;
-    }
-}
-///////////////////////////////////////////////////////////////////////////////
 
 namespace VulkanAPI
 {
