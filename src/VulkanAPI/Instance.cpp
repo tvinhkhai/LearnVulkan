@@ -296,6 +296,13 @@ QueueFamilyIndices Instance::FindQueueFamily(VkPhysicalDevice i_device)
             indices.optGraphicsFamily = i;
         }
 
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(i_device, i, m_surface->GetSurface(), &presentSupport);
+        if (presentSupport)
+        {
+            indices.optPresentFamily = i;
+        }
+
         if (indices.IsComplete())
         {
             break;
