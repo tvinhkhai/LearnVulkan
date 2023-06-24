@@ -10,9 +10,10 @@ namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
 
-PhysicalDevice::PhysicalDevice(VkPhysicalDevice i_device)
+PhysicalDevice::PhysicalDevice(VkPhysicalDevice i_device, QueueFamilyIndices& i_queueFamilyIndices)
 	: m_device(i_device)
 	, m_logicalDevice(nullptr)
+	, m_queueFamilyIndices(i_queueFamilyIndices)
 {
 
 }
@@ -26,13 +27,13 @@ PhysicalDevice::~PhysicalDevice()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_validationLayers, QueueFamilyIndices& i_queueFamilyIndices)
+void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_validationLayers)
 {
-	assert(i_queueFamilyIndices.optGraphicsFamily.has_value());
+	assert(m_queueFamilyIndices.optGraphicsFamily.has_value());
 
 	VkDeviceQueueCreateInfo queueCreateInfo{};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = i_queueFamilyIndices.optGraphicsFamily.value();
+	queueCreateInfo.queueFamilyIndex = m_queueFamilyIndices.optGraphicsFamily.value();
 	queueCreateInfo.queueCount = 1;
 
 	float queuePriority = 1.0f;
@@ -64,7 +65,7 @@ void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_valid
 	    throw std::runtime_error("failed to create logical device!");
 	}
 
-	m_logicalDevice = std::make_unique<LogicalDevice>(logicalDevice, i_queueFamilyIndices);
+	m_logicalDevice = std::make_unique<LogicalDevice>(logicalDevice, m_queueFamilyIndices);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

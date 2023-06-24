@@ -13,8 +13,8 @@ namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
 
-VulkanAPI::VulkanAPI(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo)
-    : m_instance(std::make_unique<Instance>(i_validationLayers, i_requiredInstanceExtensionsInfo))
+VulkanAPI::VulkanAPI()
+    : m_instance(nullptr)
 {
 }
 
@@ -23,6 +23,41 @@ VulkanAPI::VulkanAPI(const std::vector<const char*>& i_validationLayers, Require
 VulkanAPI::~VulkanAPI()
 {
     m_instance.reset();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void VulkanAPI::CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo)
+{
+    m_instance = std::make_unique<Instance>(i_validationLayers, i_requiredInstanceExtensionsInfo);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void VulkanAPI::SetupDebugMessenger()
+{
+    m_instance->SetupDebugMessenger();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void VulkanAPI::CreateSurface()
+{
+
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void VulkanAPI::PickPhysicalDevice()
+{
+    m_instance->PickPhysicalDevice();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void VulkanAPI::CreateLogicalDevice()
+{
+    m_instance->CreateLogicalDevice();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

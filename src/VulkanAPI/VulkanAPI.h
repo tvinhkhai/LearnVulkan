@@ -14,8 +14,14 @@ namespace VulkanAPI
 class VulkanAPI {
 ///////////////////////////////////////////////////////////////////////////////
 public:
-    VulkanAPI(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
+    VulkanAPI();
     ~VulkanAPI();
+
+    void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
+    void SetupDebugMessenger();
+    void CreateSurface();
+    void PickPhysicalDevice();
+    void CreateLogicalDevice();
 
     void PrintAvailableExtensions();
 

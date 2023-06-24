@@ -80,13 +80,6 @@ Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredI
     {
         throw std::runtime_error("failed to create instance!");
     }
-
-    if (!k_validationLayers.empty())
-    {
-        CreateDebugUtilsMessenger();
-    }
-
-    PickPhysicalDevice();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -96,6 +89,16 @@ Instance::~Instance()
     m_physicalDevice.reset();
     DestroyDebugUtilsMessenger();
     vkDestroyInstance(m_instance, nullptr);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::SetupDebugMessenger()
+{
+    if (!k_validationLayers.empty())
+    {
+        CreateDebugUtilsMessenger();
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -205,13 +208,19 @@ void Instance::PickPhysicalDevice()
     {
         VkPhysicalDevice device = candidates.rbegin()->second;
         QueueFamilyIndices indicies = FindQueueFamily(device);
-        m_physicalDevice = std::make_unique<PhysicalDevice>(device);
-        m_physicalDevice->CreateLogicalDevice(k_validationLayers, indicies);
+        m_physicalDevice = std::make_unique<PhysicalDevice>(device, indicies);
     }
     else
     {
         throw std::runtime_error("failed to find a suitable GPU!");
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::CreateLogicalDevice()
+{
+    m_physicalDevice->CreateLogicalDevice(k_validationLayers);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

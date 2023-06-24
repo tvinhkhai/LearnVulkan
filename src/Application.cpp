@@ -36,7 +36,12 @@ void Application::InitVulkan()
     const std::vector<const char*> k_validationLayers {"VK_LAYER_KHRONOS_validation"};
 #endif
     VulkanAPI::RequiredInstanceExtensionsInfo info = m_window->GetRequiredInstanceExtensionsInfo();
-    m_vulkanAPI = std::make_unique<VulkanAPI::VulkanAPI>(k_validationLayers, info);
+    m_vulkanAPI = std::make_unique<VulkanAPI::VulkanAPI>();
+    m_vulkanAPI->CreateInstance(k_validationLayers, info);
+    m_vulkanAPI->SetupDebugMessenger();
+    m_vulkanAPI->CreateSurface();
+    m_vulkanAPI->PickPhysicalDevice();
+    m_vulkanAPI->CreateLogicalDevice();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

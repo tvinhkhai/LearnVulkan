@@ -18,6 +18,10 @@ public:
     Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
     ~Instance();
 
+    void SetupDebugMessenger();
+    void PickPhysicalDevice();
+    void CreateLogicalDevice();
+
 private:
     void CreateDebugUtilsMessenger();
     void DestroyDebugUtilsMessenger();
@@ -25,7 +29,6 @@ private:
 
     bool CheckValidationLayerSupport(const std::vector<const char*>& i_validationLayers);
 
-    void PickPhysicalDevice();
     int RateDeviceSuitability(VkPhysicalDevice i_device);
     bool IsDeviceSuitable(VkPhysicalDevice i_device);
     QueueFamilyIndices FindQueueFamily(VkPhysicalDevice i_device);

@@ -6,6 +6,7 @@ struct object##_T;\
 typedef struct object##_T* object;
 
 VK_FW_DECLARATION(VkInstance);
+VK_FW_DECLARATION(VkSurfaceKHR);
 VK_FW_DECLARATION(VkDebugUtilsMessengerEXT);
 VK_FW_DECLARATION(VkPhysicalDevice);
 VK_FW_DECLARATION(VkDevice);
