@@ -19,6 +19,7 @@ public:
 private:
     VkDevice m_device;
     VkQueue m_graphicsQueue;
+    VkQueue m_presentQueue;
 };
 ///////////////////////////////////////////////////////////////////////////////
 } //namespace Instance
