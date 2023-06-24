@@ -2,11 +2,14 @@
 
 #include "VulkanAPI/VulkanAPI_fwd.inl"
 
+class Window;
+
 namespace VulkanAPI
 {
     struct QueueFamilyIndices;
     class PhysicalDevice;
     class RequiredInstanceExtensionsInfo;
+    class WindowSurface;
 }
 
 namespace VulkanAPI
@@ -18,6 +21,7 @@ public:
     Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
     ~Instance();
 
+    void CreateSurface(Window& i_window);
     void SetupDebugMessenger();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
@@ -36,6 +40,8 @@ private:
 private:
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
+
+    std::unique_ptr<WindowSurface> m_surface;
 
     const std::vector<const char*> k_validationLayers;
     std::unique_ptr<PhysicalDevice> m_physicalDevice;

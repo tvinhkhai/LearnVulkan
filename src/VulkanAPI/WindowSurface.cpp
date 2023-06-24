@@ -7,8 +7,9 @@ namespace VulkanAPI
 {
 ///////////////////////////////////////////////////////////////////////////////
 
-WindowSurface::WindowSurface(VkSurfaceKHR i_surface)
-    : m_surface(i_surface)
+WindowSurface::WindowSurface(VkInstance i_instance, VkSurfaceKHR i_surface)
+    : m_instance(i_instance)
+    ,m_surface(i_surface)
 {
 
 }
@@ -17,7 +18,7 @@ WindowSurface::WindowSurface(VkSurfaceKHR i_surface)
 
 WindowSurface::~WindowSurface()
 {
-    
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

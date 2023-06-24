@@ -63,3 +63,15 @@ VulkanAPI::RequiredInstanceExtensionsInfo Window::GetRequiredInstanceExtensionsI
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+VkSurfaceKHR Window::CreateVulkanSurface(VkInstance i_instance)
+{
+	VkSurfaceKHR surface;
+	if (glfwCreateWindowSurface(i_instance, m_window, nullptr, &surface) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create window surface!");
+	}
+
+	return surface;
+}
+
+///////////////////////////////////////////////////////////////////////////////

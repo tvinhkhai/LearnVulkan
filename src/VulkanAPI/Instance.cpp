@@ -4,6 +4,9 @@
 #include "VulkanAPI/PhysicalDevice.h"
 #include "VulkanAPI/QueueFamilyIndices.h"
 #include "VulkanAPI/RequiredInstanceExtensionsInfo.h"
+#include "VulkanAPI/WindowSurface.h"
+
+#include "Window.h"
 
 #include <vulkan/vulkan.h>
 
@@ -29,6 +32,7 @@ namespace VulkanAPI
 
 Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo)
     : m_instance(nullptr)
+    , m_surface(nullptr)
     , m_debugMessenger(nullptr)
     , k_validationLayers(i_validationLayers)
     , m_physicalDevice(nullptr)
@@ -88,7 +92,16 @@ Instance::~Instance()
 {
     m_physicalDevice.reset();
     DestroyDebugUtilsMessenger();
+    m_surface.reset();
     vkDestroyInstance(m_instance, nullptr);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::CreateSurface(Window& i_window)
+{
+    VkSurfaceKHR surface = i_window.CreateVulkanSurface(m_instance);
+    m_surface = std::make_unique<WindowSurface>(m_instance, surface);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

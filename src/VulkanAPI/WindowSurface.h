@@ -8,10 +8,11 @@ namespace VulkanAPI
 class WindowSurface {
 ///////////////////////////////////////////////////////////////////////////////
 public:
-    WindowSurface(VkSurfaceKHR i_surface);
+    WindowSurface(VkInstance i_instance, VkSurfaceKHR i_surface);
     ~WindowSurface();
 
 private:
+    VkInstance m_instance;
     VkSurfaceKHR m_surface;
 };
 ///////////////////////////////////////////////////////////////////////////////

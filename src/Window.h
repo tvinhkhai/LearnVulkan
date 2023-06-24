@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VulkanAPI/VulkanAPI_fwd.inl"
+
 struct GLFWwindow;
 
 namespace VulkanAPI
@@ -17,6 +19,7 @@ public:
     void Update();
 
     VulkanAPI::RequiredInstanceExtensionsInfo GetRequiredInstanceExtensionsInfo();
+    VkSurfaceKHR CreateVulkanSurface(VkInstance i_instance);
 
 private:
     GLFWwindow* m_window;
