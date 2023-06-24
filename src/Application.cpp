@@ -39,7 +39,7 @@ void Application::InitVulkan()
     m_vulkanAPI = std::make_unique<VulkanAPI::VulkanAPI>();
     m_vulkanAPI->CreateInstance(k_validationLayers, info);
     m_vulkanAPI->SetupDebugMessenger();
-    m_vulkanAPI->CreateSurface();
+    m_vulkanAPI->CreateSurface(m_window);
     m_vulkanAPI->PickPhysicalDevice();
     m_vulkanAPI->CreateLogicalDevice();
 }

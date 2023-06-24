@@ -2,6 +2,8 @@
 
 #include "VulkanAPI/VulkanAPI_fwd.inl"
 
+class Window;
+
 namespace VulkanAPI
 {
 class Instance;
@@ -19,7 +21,7 @@ public:
 
     void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
     void SetupDebugMessenger();
-    void CreateSurface();
+    void CreateSurface(std::unique_ptr<Window>& i_window);
     void PickPhysicalDevice();
     void CreateLogicalDevice();
 

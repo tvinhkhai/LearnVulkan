@@ -98,9 +98,9 @@ Instance::~Instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Instance::CreateSurface(Window& i_window)
+void Instance::CreateSurface(std::unique_ptr<Window>& i_window)
 {
-    VkSurfaceKHR surface = i_window.CreateVulkanSurface(m_instance);
+    VkSurfaceKHR surface = i_window->CreateVulkanSurface(m_instance);
     m_surface = std::make_unique<WindowSurface>(m_instance, surface);
 }
 

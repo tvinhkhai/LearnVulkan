@@ -21,7 +21,7 @@ public:
     Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
     ~Instance();
 
-    void CreateSurface(Window& i_window);
+    void CreateSurface(std::unique_ptr<Window>& i_window);
     void SetupDebugMessenger();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
