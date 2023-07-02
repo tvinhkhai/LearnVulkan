@@ -1,7 +1,5 @@
 #pragma once
 
-#include "VulkanAPI/VulkanAPI_fwd.inl"
-
 namespace VulkanAPI
 {
     struct QueueFamilyIndices;

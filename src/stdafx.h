@@ -9,3 +9,5 @@
 #include <optional>
 #include <cassert>
 #include <set>
+
+#include <vulkan/vulkan.h>

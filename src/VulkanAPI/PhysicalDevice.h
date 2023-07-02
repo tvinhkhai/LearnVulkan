@@ -1,6 +1,5 @@
 #pragma once
 
-#include "VulkanAPI/VulkanAPI_fwd.inl"
 #include "VulkanAPI/QueueFamilyIndices.h"
 
 namespace VulkanAPI
