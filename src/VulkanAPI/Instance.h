@@ -8,6 +8,7 @@ namespace VulkanAPI
     class PhysicalDevice;
     class RequiredInstanceExtensionsInfo;
     class WindowSurface;
+    struct SwapChainSupportDetails;
 }
 
 namespace VulkanAPI
@@ -34,6 +35,9 @@ private:
     int RateDeviceSuitability(VkPhysicalDevice i_device);
     bool IsDeviceSuitable(VkPhysicalDevice i_device);
     QueueFamilyIndices FindQueueFamily(VkPhysicalDevice i_device);
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice i_device);
+
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice i_device);
 
 private:
     VkInstance m_instance;

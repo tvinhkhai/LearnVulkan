@@ -1,0 +1,12 @@
+#pragma once
+
+namespace VulkanAPI
+{
+///////////////////////////////////////////////////////////////////////////////
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+///////////////////////////////////////////////////////////////////////////////
+} //namespace Instance

@@ -2,7 +2,6 @@
 #include "PhysicalDevice.h"
 
 #include "VulkanAPI/LogicalDevice.h"
-//#include "VulkanAPI/QueueFamilyIndices.h"
 
 #include <vulkan/vulkan.h>
 
@@ -27,7 +26,7 @@ PhysicalDevice::~PhysicalDevice()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_validationLayers)
+void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_validationLayers, const std::vector<const char*>& i_deviceExtensions)
 {
 	assert(m_queueFamilyIndices.IsComplete());
 
@@ -46,8 +45,6 @@ void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_valid
 		queueCreateInfos.push_back(queueCreateInfo);
 	}
 
-	
-
 	VkPhysicalDeviceFeatures deviceFeatures{};
 
 	VkDeviceCreateInfo createInfo{};
@@ -57,7 +54,8 @@ void PhysicalDevice::CreateLogicalDevice(const std::vector<const char*>& i_valid
 
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = 0;
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(i_deviceExtensions.size());
+	createInfo.ppEnabledExtensionNames = i_deviceExtensions.data();
 
 	if (i_validationLayers.empty())
 	{

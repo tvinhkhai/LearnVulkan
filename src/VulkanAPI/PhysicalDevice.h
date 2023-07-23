@@ -4,7 +4,6 @@
 
 namespace VulkanAPI
 {
-    //struct QueueFamilyIndices;
     class LogicalDevice;
 }
 
@@ -17,7 +16,7 @@ public:
     PhysicalDevice(VkPhysicalDevice i_device, QueueFamilyIndices& i_queueFamilyIndices);
     ~PhysicalDevice();
 
-    void CreateLogicalDevice(const std::vector<const char*>& i_validationLayers);
+    void CreateLogicalDevice(const std::vector<const char*>& i_validationLayers, const std::vector<const char*>& i_deviceExtensions);
 
 private:
     VkPhysicalDevice m_device;

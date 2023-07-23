@@ -4,6 +4,7 @@
 #include "VulkanAPI/PhysicalDevice.h"
 #include "VulkanAPI/QueueFamilyIndices.h"
 #include "VulkanAPI/RequiredInstanceExtensionsInfo.h"
+#include "VulkanAPI/SwapChainSupportDetails.h"
 #include "VulkanAPI/WindowSurface.h"
 
 #include "Window.h"
@@ -28,6 +29,10 @@ namespace
 
 namespace VulkanAPI
 {
+///////////////////////////////////////////////////////////////////////////////
+const std::vector<const char*> k_deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
 ///////////////////////////////////////////////////////////////////////////////
 
 Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo)
@@ -233,7 +238,7 @@ void Instance::PickPhysicalDevice()
 
 void Instance::CreateLogicalDevice()
 {
-    m_physicalDevice->CreateLogicalDevice(k_validationLayers);
+    m_physicalDevice->CreateLogicalDevice(k_validationLayers, k_deviceExtensions);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -274,7 +279,16 @@ int Instance::RateDeviceSuitability(VkPhysicalDevice i_device)
 bool Instance::IsDeviceSuitable(VkPhysicalDevice i_device)
 {
     QueueFamilyIndices indices = FindQueueFamily(i_device);
-    return indices.IsComplete();
+
+    bool extensionsSupported = CheckDeviceExtensionSupport(i_device);
+
+    bool swapChainAdequate = false;
+    if (extensionsSupported) {
+        SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(i_device);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    return indices.IsComplete() && extensionsSupported && swapChainAdequate;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -312,6 +326,52 @@ QueueFamilyIndices Instance::FindQueueFamily(VkPhysicalDevice i_device)
     }
 
     return indices;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+bool Instance::CheckDeviceExtensionSupport(VkPhysicalDevice i_device)
+{
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(i_device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(i_device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(k_deviceExtensions.begin(), k_deviceExtensions.end());
+
+    for (const auto& extension : availableExtensions)
+    {
+        requiredExtensions.erase(extension.extensionName);
+    }
+
+    return requiredExtensions.empty();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+SwapChainSupportDetails Instance::QuerySwapChainSupport(VkPhysicalDevice i_device)
+{
+    SwapChainSupportDetails details;
+
+    uint32_t formatCount;
+    VkSurfaceKHR surface = m_surface->GetSurface();
+    vkGetPhysicalDeviceSurfaceFormatsKHR(i_device, surface, &formatCount, nullptr);
+
+    if (formatCount != 0) {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(i_device, surface, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModeCount;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(i_device, surface, &presentModeCount, nullptr);
+
+    if (presentModeCount != 0) {
+        details.presentModes.resize(presentModeCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(i_device, surface, &presentModeCount, details.presentModes.data());
+    }
+
+    return details;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
