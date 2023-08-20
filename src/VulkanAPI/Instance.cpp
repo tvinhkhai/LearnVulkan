@@ -576,6 +576,25 @@ void Instance::CreateCommandPool()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void Instance::CreateCommandBuffer()
+{
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = m_commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandBufferCount = 1;
+
+    if (vkAllocateCommandBuffers(device, &allocInfo, &m_commandBuffer) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate command buffers!");
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 int Instance::RateDeviceSuitability(VkPhysicalDevice i_device)
 {
     if (!IsDeviceSuitable(i_device))

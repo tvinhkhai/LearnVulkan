@@ -49,6 +49,8 @@ void Application::InitVulkan()
     m_vulkanAPI->CreateRenderPass();
     m_vulkanAPI->CreateGraphicsPipeline();
     m_vulkanAPI->CreateFrameBuffers();
+    m_vulkanAPI->CreateCommandPool();
+    m_vulkanAPI->CreateCommandBuffer();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

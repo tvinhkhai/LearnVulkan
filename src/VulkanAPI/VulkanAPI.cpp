@@ -104,6 +104,13 @@ void VulkanAPI::CreateCommandPool()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void VulkanAPI::CreateCommandBuffer()
+{
+    m_instance->CreateCommandBuffer();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void VulkanAPI::PrintAvailableExtensions()
 {
     uint32_t extensionCount = 0;

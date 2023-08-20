@@ -29,6 +29,7 @@ public:
     void CreateGraphicsPipeline();
     void CreateFrameBuffers();
     void CreateCommandPool();
+    void CreateCommandBuffer();
 
     void PrintAvailableExtensions();
 
