@@ -24,6 +24,7 @@ public:
     void CreateLogicalDevice();
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateGraphicsPipeline();
 
     void PrintAvailableExtensions();
 

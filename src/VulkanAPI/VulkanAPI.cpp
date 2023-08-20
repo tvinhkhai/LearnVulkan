@@ -76,6 +76,13 @@ void VulkanAPI::CreateImageViews()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void VulkanAPI::CreateGraphicsPipeline()
+{
+    m_instance->CreateGraphicsPipeline();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void VulkanAPI::PrintAvailableExtensions()
 {
     uint32_t extensionCount = 0;

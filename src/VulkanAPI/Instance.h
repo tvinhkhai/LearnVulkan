@@ -26,6 +26,7 @@ public:
     void CreateLogicalDevice();
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateGraphicsPipeline();
 
 private:
     void CreateDebugUtilsMessenger();
