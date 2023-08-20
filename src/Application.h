@@ -1,5 +1,6 @@
 #pragma once
 
+class FileSystem;
 class Window;
 namespace VulkanAPI
 {
@@ -21,6 +22,7 @@ private:
 private:
     std::unique_ptr<Window> m_window;
     std::unique_ptr<VulkanAPI::VulkanAPI> m_vulkanAPI;
+    std::unique_ptr<FileSystem> m_fileSystem;
 
 ///////////////////////////////////////////////////////////////////////////////
 };

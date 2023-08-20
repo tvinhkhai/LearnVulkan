@@ -1,5 +1,6 @@
 #pragma once
 
+class FileSystem;
 class Window;
 
 namespace VulkanAPI
@@ -17,7 +18,7 @@ namespace VulkanAPI
 class Instance {
 ///////////////////////////////////////////////////////////////////////////////
 public:
-    Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window);
+    Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window, std::unique_ptr<FileSystem>& i_fileSystem);
     ~Instance();
 
     void CreateSurface();
@@ -26,6 +27,8 @@ public:
     void CreateLogicalDevice();
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateRenderPass();
+    void CreateGraphicsPipeline();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -45,8 +48,11 @@ private:
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabilities);
     void RetrievingSwapChainImages();
 
+    VkShaderModule CreateShaderModule(const std::vector<char>& i_code);
+
 private:
     VkInstance m_instance;
+    std::unique_ptr<FileSystem>& m_fileSystem;
     VkDebugUtilsMessengerEXT m_debugMessenger;
 
     std::unique_ptr<Window>& m_window;
@@ -55,6 +61,10 @@ private:
     std::vector<VkImageView> m_swapChainImageViews;
     VkFormat m_swapChainImageFormat;
     VkExtent2D m_swapChainExtent;
+
+    VkRenderPass m_renderPass;
+    VkPipelineLayout m_pipelineLayout;
+    VkPipeline m_graphicsPipeline;
 
     std::unique_ptr<WindowSurface> m_surface;
 

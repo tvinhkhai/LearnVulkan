@@ -1,5 +1,6 @@
 #pragma once
 
+class FileSystem;
 class Window;
 
 namespace VulkanAPI
@@ -17,13 +18,15 @@ public:
     VulkanAPI();
     ~VulkanAPI();
 
-    void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window);
+    void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window, std::unique_ptr<FileSystem>& i_fileSystem);
     void SetupDebugMessenger();
     void CreateSurface();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
     void CreateSwapChain();
     void CreateImageViews();
+    void CreateRenderPass();
+    void CreateGraphicsPipeline();
 
     void PrintAvailableExtensions();
 
