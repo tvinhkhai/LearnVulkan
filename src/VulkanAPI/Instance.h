@@ -53,6 +53,8 @@ private:
 
     VkShaderModule CreateShaderModule(const std::vector<char>& i_code);
 
+    void RecordCommandBuffer(VkCommandBuffer i_commandBuffer, uint32_t i_imageIndex);
+
 private:
     VkInstance m_instance;
     std::unique_ptr<FileSystem>& m_fileSystem;
