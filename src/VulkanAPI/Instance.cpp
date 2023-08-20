@@ -8,6 +8,7 @@
 #include "VulkanAPI/SwapChainSupportDetails.h"
 #include "VulkanAPI/WindowSurface.h"
 
+#include "FileSystem.h"
 #include "Window.h"
 
 #include <cstdint>
@@ -38,8 +39,9 @@ const std::vector<const char*> k_deviceExtensions = {
 };
 ///////////////////////////////////////////////////////////////////////////////
 
-Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window)
+Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window, std::unique_ptr<FileSystem>& i_fileSystem)
     : m_instance(nullptr)
+    , m_fileSystem(i_fileSystem)
     , m_window(i_window)
     , m_surface(nullptr)
     , m_debugMessenger(nullptr)

@@ -27,9 +27,9 @@ VulkanAPI::~VulkanAPI()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void VulkanAPI::CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window)
+void VulkanAPI::CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window, std::unique_ptr<FileSystem>& i_fileSystem)
 {
-    m_instance = std::make_unique<Instance>(i_validationLayers, i_requiredInstanceExtensionsInfo, i_window);
+    m_instance = std::make_unique<Instance>(i_validationLayers, i_requiredInstanceExtensionsInfo, i_window, i_fileSystem);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
