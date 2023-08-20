@@ -42,6 +42,7 @@ private:
     VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& i_availableFormats);
     VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& i_availablePresentModes);
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabilities);
+    void RetrievingSwapChainImages();
 
 private:
     VkInstance m_instance;
@@ -49,6 +50,10 @@ private:
 
     std::unique_ptr<Window>& m_window;
     VkSwapchainKHR m_swapChain;
+    std::vector<VkImage> m_swapChainImages;
+    VkFormat m_swapChainImageFormat;
+    VkExtent2D m_swapChainExtent;
+
     std::unique_ptr<WindowSurface> m_surface;
 
     const std::vector<const char*> k_validationLayers;

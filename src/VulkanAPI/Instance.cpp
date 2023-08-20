@@ -302,6 +302,10 @@ void Instance::CreateSwapChain()
     if (vkCreateSwapchainKHR(logicalDevice->GetDevice(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS) {
         throw std::runtime_error("failed to create swap chain!");
     }
+
+    RetrievingSwapChainImages();
+    m_swapChainImageFormat = surfaceFormat.format;
+    m_swapChainExtent = extent;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -490,6 +494,20 @@ VkExtent2D Instance::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabili
 
         return actualExtent;
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::RetrievingSwapChainImages()
+{
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+
+    uint32_t imageCount;
+    vkGetSwapchainImagesKHR(device, m_swapChain, &imageCount, nullptr);
+    m_swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(device, m_swapChain, &imageCount, m_swapChainImages.data());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
