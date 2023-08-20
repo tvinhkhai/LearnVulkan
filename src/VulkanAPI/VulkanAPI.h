@@ -28,6 +28,7 @@ public:
     void CreateRenderPass();
     void CreateGraphicsPipeline();
     void CreateFrameBuffers();
+    void CreateCommandPool();
 
     void PrintAvailableExtensions();
 

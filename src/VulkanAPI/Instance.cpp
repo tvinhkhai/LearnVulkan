@@ -105,12 +105,15 @@ Instance::~Instance()
     assert(logicalDevice != nullptr);
     VkDevice device = logicalDevice->GetDevice();
 
-    vkDestroyPipeline(device, m_graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device, m_pipelineLayout, nullptr);
+    vkDestroyCommandPool(device, m_commandPool, nullptr);
+
     for (auto framebuffer : m_swapChainFramebuffers)
     {
         vkDestroyFramebuffer(device, framebuffer, nullptr);
     }
+
+    vkDestroyPipeline(device, m_graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device, m_pipelineLayout, nullptr);
     vkDestroyRenderPass(device, m_renderPass, nullptr);
     for (auto imageView : m_swapChainImageViews) {
         vkDestroyImageView(device, imageView, nullptr);
@@ -550,6 +553,24 @@ void Instance::CreateFrameBuffers()
         if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]) != VK_SUCCESS) {
             throw std::runtime_error("failed to create framebuffer!");
         }
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::CreateCommandPool()
+{
+    QueueFamilyIndices queueFamilyIndices = m_physicalDevice->GetQueueFamilyIndices();
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.optGraphicsFamily.value();
+    if (vkCreateCommandPool(device, &poolInfo, nullptr, &m_commandPool) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create command pool!");
     }
 }
 
