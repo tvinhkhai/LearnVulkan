@@ -17,7 +17,7 @@ FileSystem::~FileSystem()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-std::vector<char> FileSystem::readFile(const std::string& i_fileName)
+std::vector<char> FileSystem::ReadFile(const std::string& i_fileName)
 {
     std::ifstream file(i_fileName, std::ios::ate | std::ios::binary);
 

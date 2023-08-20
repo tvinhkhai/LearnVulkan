@@ -346,6 +346,8 @@ void Instance::CreateImageViews()
 
 void Instance::CreateGraphicsPipeline()
 {
+    auto vertShaderCode = m_fileSystem->ReadFile("shaders/vert.spv");
+    auto fragShaderCode = m_fileSystem->ReadFile("shaders/frag.spv");
 }
 
 ///////////////////////////////////////////////////////////////////////////////

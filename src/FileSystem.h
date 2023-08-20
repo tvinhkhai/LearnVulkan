@@ -6,7 +6,7 @@ public:
     FileSystem();
     ~FileSystem();
 
-    std::vector<char> readFile(const std::string& i_fileName);
+    std::vector<char> ReadFile(const std::string& i_fileName);
 
 ///////////////////////////////////////////////////////////////////////////////
 };
