@@ -29,6 +29,7 @@ public:
     void CreateImageViews();
     void CreateRenderPass();
     void CreateGraphicsPipeline();
+    void CreateFrameBuffers();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -65,6 +66,8 @@ private:
     VkRenderPass m_renderPass;
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_graphicsPipeline;
+
+    std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
     std::unique_ptr<WindowSurface> m_surface;
 

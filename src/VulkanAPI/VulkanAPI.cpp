@@ -90,6 +90,13 @@ void VulkanAPI::CreateGraphicsPipeline()
 
 ///////////////////////////////////////////////////////////////////////////////
 
+void VulkanAPI::CreateFrameBuffers()
+{
+    m_instance->CreateFrameBuffers();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 void VulkanAPI::PrintAvailableExtensions()
 {
     uint32_t extensionCount = 0;

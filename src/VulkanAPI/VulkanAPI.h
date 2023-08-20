@@ -27,6 +27,7 @@ public:
     void CreateImageViews();
     void CreateRenderPass();
     void CreateGraphicsPipeline();
+    void CreateFrameBuffers();
 
     void PrintAvailableExtensions();
 
