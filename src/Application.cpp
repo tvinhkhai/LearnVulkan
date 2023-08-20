@@ -43,6 +43,7 @@ void Application::InitVulkan()
     m_vulkanAPI->PickPhysicalDevice();
     m_vulkanAPI->CreateLogicalDevice();
     m_vulkanAPI->CreateSwapChain();
+    m_vulkanAPI->CreateImageViews();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -23,6 +23,7 @@ public:
     void PickPhysicalDevice();
     void CreateLogicalDevice();
     void CreateSwapChain();
+    void CreateImageViews();
 
     void PrintAvailableExtensions();
 

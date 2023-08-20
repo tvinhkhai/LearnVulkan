@@ -25,6 +25,7 @@ public:
     void PickPhysicalDevice();
     void CreateLogicalDevice();
     void CreateSwapChain();
+    void CreateImageViews();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -51,6 +52,7 @@ private:
     std::unique_ptr<Window>& m_window;
     VkSwapchainKHR m_swapChain;
     std::vector<VkImage> m_swapChainImages;
+    std::vector<VkImageView> m_swapChainImageViews;
     VkFormat m_swapChainImageFormat;
     VkExtent2D m_swapChainExtent;
 
