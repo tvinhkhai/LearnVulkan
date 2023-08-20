@@ -5,7 +5,7 @@ class Window;
 namespace VulkanAPI
 {
 class Instance;
-class RequiredInstanceExtensionsInfo;
+struct RequiredInstanceExtensionsInfo;
 }
 
 namespace VulkanAPI
@@ -17,11 +17,12 @@ public:
     VulkanAPI();
     ~VulkanAPI();
 
-    void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
+    void CreateInstance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window);
     void SetupDebugMessenger();
-    void CreateSurface(std::unique_ptr<Window>& i_window);
+    void CreateSurface();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
+    void CreateSwapChain();
 
     void PrintAvailableExtensions();
 

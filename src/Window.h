@@ -10,6 +10,13 @@ struct RequiredInstanceExtensionsInfo;
 class Window {
 ///////////////////////////////////////////////////////////////////////////////
 public:
+
+    struct Size
+    {
+        int width;
+        int height;
+    };
+
     Window();
     ~Window();
 
@@ -18,6 +25,8 @@ public:
 
     VulkanAPI::RequiredInstanceExtensionsInfo GetRequiredInstanceExtensionsInfo();
     VkSurfaceKHR CreateVulkanSurface(VkInstance i_instance);
+
+    Size GetFramebufferSize();
 
 private:
     GLFWwindow* m_window;

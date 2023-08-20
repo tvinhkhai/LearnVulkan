@@ -37,11 +37,12 @@ void Application::InitVulkan()
 #endif
     VulkanAPI::RequiredInstanceExtensionsInfo info = m_window->GetRequiredInstanceExtensionsInfo();
     m_vulkanAPI = std::make_unique<VulkanAPI::VulkanAPI>();
-    m_vulkanAPI->CreateInstance(k_validationLayers, info);
+    m_vulkanAPI->CreateInstance(k_validationLayers, info, m_window);
     m_vulkanAPI->SetupDebugMessenger();
-    m_vulkanAPI->CreateSurface(m_window);
+    m_vulkanAPI->CreateSurface();
     m_vulkanAPI->PickPhysicalDevice();
     m_vulkanAPI->CreateLogicalDevice();
+    m_vulkanAPI->CreateSwapChain();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

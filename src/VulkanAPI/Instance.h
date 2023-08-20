@@ -17,13 +17,14 @@ namespace VulkanAPI
 class Instance {
 ///////////////////////////////////////////////////////////////////////////////
 public:
-    Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo);
+    Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window);
     ~Instance();
 
-    void CreateSurface(std::unique_ptr<Window>& i_window);
+    void CreateSurface();
     void SetupDebugMessenger();
     void PickPhysicalDevice();
     void CreateLogicalDevice();
+    void CreateSwapChain();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -38,11 +39,16 @@ private:
     bool CheckDeviceExtensionSupport(VkPhysicalDevice i_device);
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice i_device);
+    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& i_availableFormats);
+    VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& i_availablePresentModes);
+    VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabilities);
 
 private:
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
 
+    std::unique_ptr<Window>& m_window;
+    VkSwapchainKHR m_swapChain;
     std::unique_ptr<WindowSurface> m_surface;
 
     const std::vector<const char*> k_validationLayers;

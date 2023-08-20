@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Instance.h"
 
+#include "VulkanAPI/LogicalDevice.h"
 #include "VulkanAPI/PhysicalDevice.h"
 #include "VulkanAPI/QueueFamilyIndices.h"
 #include "VulkanAPI/RequiredInstanceExtensionsInfo.h"
@@ -9,7 +10,9 @@
 
 #include "Window.h"
 
-#include <vulkan/vulkan.h>
+#include <cstdint>
+#include <limits>
+#include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace
@@ -35,8 +38,9 @@ const std::vector<const char*> k_deviceExtensions = {
 };
 ///////////////////////////////////////////////////////////////////////////////
 
-Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo)
+Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredInstanceExtensionsInfo& i_requiredInstanceExtensionsInfo, std::unique_ptr<Window>& i_window)
     : m_instance(nullptr)
+    , m_window(i_window)
     , m_surface(nullptr)
     , m_debugMessenger(nullptr)
     , k_validationLayers(i_validationLayers)
@@ -95,6 +99,9 @@ Instance::Instance(const std::vector<const char*>& i_validationLayers, RequiredI
 
 Instance::~Instance()
 {
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    vkDestroySwapchainKHR(logicalDevice->GetDevice(), m_swapChain, nullptr);
     m_physicalDevice.reset();
     DestroyDebugUtilsMessenger();
     m_surface.reset();
@@ -103,9 +110,9 @@ Instance::~Instance()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void Instance::CreateSurface(std::unique_ptr<Window>& i_window)
+void Instance::CreateSurface()
 {
-    VkSurfaceKHR surface = i_window->CreateVulkanSurface(m_instance);
+    VkSurfaceKHR surface = m_window->CreateVulkanSurface(m_instance);
     m_surface = std::make_unique<WindowSurface>(m_instance, surface);
 }
 
@@ -239,6 +246,62 @@ void Instance::PickPhysicalDevice()
 void Instance::CreateLogicalDevice()
 {
     m_physicalDevice->CreateLogicalDevice(k_validationLayers, k_deviceExtensions);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::CreateSwapChain()
+{
+    SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(m_physicalDevice->GetDevice());
+
+    VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
+
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
+    {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = m_surface->GetSurface();
+
+    createInfo.minImageCount = imageCount;
+    createInfo.imageFormat = surfaceFormat.format;
+    createInfo.imageColorSpace = surfaceFormat.colorSpace;
+    createInfo.imageExtent = extent;
+    createInfo.imageArrayLayers = 1;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    QueueFamilyIndices indices = m_physicalDevice->GetQueueFamilyIndices();
+    uint32_t queueFamilyIndices[] = { indices.optGraphicsFamily.value(), indices.optPresentFamily.value() };
+
+    if (queueFamilyIndices[0] != queueFamilyIndices[1])
+    {
+        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        createInfo.queueFamilyIndexCount = 2;
+        createInfo.pQueueFamilyIndices = queueFamilyIndices;
+    }
+    else
+    {
+        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.queueFamilyIndexCount = 0; // Optional
+        createInfo.pQueueFamilyIndices = nullptr; // Optional
+    }
+
+    createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.presentMode = presentMode;
+    createInfo.clipped = VK_TRUE;
+    createInfo.oldSwapchain = VK_NULL_HANDLE;
+    
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    if (vkCreateSwapchainKHR(logicalDevice->GetDevice(), &createInfo, nullptr, &m_swapChain) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create swap chain!");
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -378,6 +441,55 @@ SwapChainSupportDetails Instance::QuerySwapChainSupport(VkPhysicalDevice i_devic
     }
 
     return details;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+VkSurfaceFormatKHR Instance::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& i_availableFormats)
+{
+    for (const auto& availableFormat : i_availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            return availableFormat;
+        }
+    }
+
+    return i_availableFormats[0];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+VkPresentModeKHR Instance::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& i_availablePresentModes)
+{
+    for (const auto& availablePresentMode : i_availablePresentModes) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            return availablePresentMode;
+        }
+    }
+
+    return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+VkExtent2D Instance::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabilities)
+{
+    if (i_capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) 
+    {
+        return i_capabilities.currentExtent;
+    }
+    else 
+    {
+        Window::Size framebufferSize = m_window->GetFramebufferSize();
+        VkExtent2D actualExtent = {
+            static_cast<uint32_t>(framebufferSize.width),
+            static_cast<uint32_t>(framebufferSize.height)
+        };
+
+        actualExtent.width = std::clamp(actualExtent.width, i_capabilities.minImageExtent.width, i_capabilities.maxImageExtent.width);
+        actualExtent.height = std::clamp(actualExtent.height, i_capabilities.minImageExtent.height, i_capabilities.maxImageExtent.height);
+
+        return actualExtent;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

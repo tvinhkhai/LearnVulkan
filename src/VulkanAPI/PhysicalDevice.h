@@ -17,6 +17,20 @@ public:
     ~PhysicalDevice();
 
     void CreateLogicalDevice(const std::vector<const char*>& i_validationLayers, const std::vector<const char*>& i_deviceExtensions);
+    VkPhysicalDevice GetDevice()
+    {
+        return m_device;
+    }
+
+    QueueFamilyIndices GetQueueFamilyIndices()
+    {
+        return m_queueFamilyIndices;
+    }
+
+    LogicalDevice* GetLogicalDevice()
+    {
+        return m_logicalDevice.get();
+    }
 
 private:
     VkPhysicalDevice m_device;

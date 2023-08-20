@@ -75,3 +75,14 @@ VkSurfaceKHR Window::CreateVulkanSurface(VkInstance i_instance)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+
+Window::Size Window::GetFramebufferSize()
+{
+	Window::Size size;
+
+	glfwGetFramebufferSize(m_window, &size.width, &size.height);
+
+	return size;
+}
+
+///////////////////////////////////////////////////////////////////////////////
