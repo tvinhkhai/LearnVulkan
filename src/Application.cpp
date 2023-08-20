@@ -48,6 +48,10 @@ void Application::InitVulkan()
     m_vulkanAPI->CreateImageViews();
     m_vulkanAPI->CreateRenderPass();
     m_vulkanAPI->CreateGraphicsPipeline();
+    m_vulkanAPI->CreateFrameBuffers();
+    m_vulkanAPI->CreateCommandPool();
+    m_vulkanAPI->CreateCommandBuffer();
+    m_vulkanAPI->CreateSyncObjects();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,7 +61,17 @@ void Application::MainLoop()
     while (!m_window->IsExiting())
     {
         m_window->Update();
+        DrawFrame();
     }
+
+    m_vulkanAPI->OnExit();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Application::DrawFrame()
+{
+    m_vulkanAPI->DrawFrame();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

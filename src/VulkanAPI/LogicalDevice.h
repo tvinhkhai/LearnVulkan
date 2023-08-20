@@ -19,6 +19,16 @@ public:
         return m_device;
     }
 
+    VkQueue GetGraphicsQueue()
+    {
+        return m_graphicsQueue;
+    }
+
+    VkQueue GetPresentQueue()
+    {
+        return m_presentQueue;
+    }
+
 private:
     VkDevice m_device;
     VkQueue m_graphicsQueue;

@@ -29,6 +29,14 @@ public:
     void CreateImageViews();
     void CreateRenderPass();
     void CreateGraphicsPipeline();
+    void CreateFrameBuffers();
+    void CreateCommandPool();
+    void CreateCommandBuffer();
+    void CreateSyncObjects();
+
+    void OnExit();
+
+    void DrawFrame();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -50,6 +58,8 @@ private:
 
     VkShaderModule CreateShaderModule(const std::vector<char>& i_code);
 
+    void RecordCommandBuffer(VkCommandBuffer i_commandBuffer, uint32_t i_imageIndex);
+
 private:
     VkInstance m_instance;
     std::unique_ptr<FileSystem>& m_fileSystem;
@@ -65,6 +75,15 @@ private:
     VkRenderPass m_renderPass;
     VkPipelineLayout m_pipelineLayout;
     VkPipeline m_graphicsPipeline;
+
+    std::vector<VkFramebuffer> m_swapChainFramebuffers;
+
+    VkCommandPool m_commandPool;
+    VkCommandBuffer m_commandBuffer;
+
+    VkSemaphore m_imageAvailableSemaphore;
+    VkSemaphore m_renderFinishedSemaphore;
+    VkFence m_inFlightFence;
 
     std::unique_ptr<WindowSurface> m_surface;
 
