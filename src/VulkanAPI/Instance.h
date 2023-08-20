@@ -47,6 +47,8 @@ private:
     VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& i_capabilities);
     void RetrievingSwapChainImages();
 
+    VkShaderModule CreateShaderModule(const std::vector<char>& i_code);
+
 private:
     VkInstance m_instance;
     std::unique_ptr<FileSystem>& m_fileSystem;
