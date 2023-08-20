@@ -106,6 +106,9 @@ Instance::~Instance()
     VkDevice device = logicalDevice->GetDevice();
 
     vkDestroyCommandPool(device, m_commandPool, nullptr);
+    vkDestroySemaphore(device, m_imageAvailableSemaphore, nullptr);
+    vkDestroySemaphore(device, m_renderFinishedSemaphore, nullptr);
+    vkDestroyFence(device, m_inFlightFence, nullptr);
 
     for (auto framebuffer : m_swapChainFramebuffers)
     {
@@ -377,12 +380,22 @@ void Instance::CreateRenderPass()
     subpass.colorAttachmentCount = 1;
     subpass.pColorAttachments = &colorAttachmentRef;
 
+    VkSubpassDependency dependency{};
+    dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+    dependency.dstSubpass = 0;
+    dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.srcAccessMask = 0;
+    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = 1;
     renderPassInfo.pAttachments = &colorAttachment;
     renderPassInfo.subpassCount = 1;
     renderPassInfo.pSubpasses = &subpass;
+    renderPassInfo.dependencyCount = 1;
+    renderPassInfo.pDependencies = &dependency;
 
     LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
     assert(logicalDevice != nullptr);
@@ -591,6 +604,85 @@ void Instance::CreateCommandBuffer()
     if (vkAllocateCommandBuffers(device, &allocInfo, &m_commandBuffer) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate command buffers!");
     }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::CreateSyncObjects()
+{
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; //not wait on 1st frame
+
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_imageAvailableSemaphore) != VK_SUCCESS ||
+        vkCreateSemaphore(device, &semaphoreInfo, nullptr, &m_renderFinishedSemaphore) != VK_SUCCESS ||
+        vkCreateFence(device, &fenceInfo, nullptr, &m_inFlightFence) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create semaphores!");
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::OnExit()
+{
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+    vkDeviceWaitIdle(device);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void Instance::DrawFrame()
+{
+    LogicalDevice* logicalDevice = m_physicalDevice->GetLogicalDevice();
+    assert(logicalDevice != nullptr);
+    VkDevice device = logicalDevice->GetDevice();
+    vkWaitForFences(device, 1, &m_inFlightFence, VK_TRUE, UINT64_MAX);
+    vkResetFences(device, 1, &m_inFlightFence);
+
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(device, m_swapChain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &imageIndex);
+
+    vkResetCommandBuffer(m_commandBuffer, 0);
+    RecordCommandBuffer(m_commandBuffer, imageIndex);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphore };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &m_commandBuffer;
+    VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+    
+    if (vkQueueSubmit(logicalDevice->GetGraphicsQueue(), 1, &submitInfo, m_inFlightFence) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = { m_swapChain };
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr; // Optional
+    vkQueuePresentKHR(logicalDevice->GetPresentQueue(), &presentInfo);
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

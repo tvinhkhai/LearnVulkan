@@ -30,6 +30,10 @@ public:
     void CreateFrameBuffers();
     void CreateCommandPool();
     void CreateCommandBuffer();
+    void CreateSyncObjects();
+
+    void DrawFrame();
+    void OnExit();
 
     void PrintAvailableExtensions();
 

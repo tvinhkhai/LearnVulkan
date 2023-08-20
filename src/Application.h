@@ -17,6 +17,7 @@ public:
 private:
     void InitVulkan();
     void MainLoop();
+    void DrawFrame();
     void Cleanup();
 
 private:

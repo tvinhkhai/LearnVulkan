@@ -32,6 +32,11 @@ public:
     void CreateFrameBuffers();
     void CreateCommandPool();
     void CreateCommandBuffer();
+    void CreateSyncObjects();
+
+    void OnExit();
+
+    void DrawFrame();
 
 private:
     void CreateDebugUtilsMessenger();
@@ -75,6 +80,10 @@ private:
 
     VkCommandPool m_commandPool;
     VkCommandBuffer m_commandBuffer;
+
+    VkSemaphore m_imageAvailableSemaphore;
+    VkSemaphore m_renderFinishedSemaphore;
+    VkFence m_inFlightFence;
 
     std::unique_ptr<WindowSurface> m_surface;
 
